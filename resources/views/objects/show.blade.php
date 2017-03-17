@@ -42,7 +42,7 @@
 
 
 
-    <div class="col-md-6"></div>
+    <div class="col-md-6">
     <div class="table-responsive">
         <table class="table table-striped table-condensed">
             @if($objects[0]->type == 'houses')
@@ -200,13 +200,9 @@
                 @if($objects[0]-> floor!= '')
                     <tr>
                         <td>Этаж:</td>
-                        <td>{{$objects[0]->floor}}@if($objects[0]->floors != '')
-                                /{{$objects[0]->floors}}</td>
-                    </tr>
-                    @endif
+                        <td>{{$objects[0]->floor}}@if($objects[0]->floors != '')/{{$objects[0]->floors}}@endif</td>
                     </tr>
                 @endif
-
                 @if($objects[0]->full_area != '')
                     <tr>
                         <td>Общая площадь:</td>
@@ -299,8 +295,11 @@
     <div class="col-md-6">
         <div id="map" style="height: 300px"></div>
     </div>
-    <h3>Описание</h3>
-    <div>{!! $objects[0]->body !!}</div>
+
+    <div class="col-md-12">
+        <h3>Описание</h3>
+        {!! $objects[0]->body !!}
+    </div>
 
 
     <div id="map" style="height: 300px"></div>
