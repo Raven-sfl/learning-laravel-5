@@ -42,7 +42,7 @@
 
 
 
-
+    <div class="col-md-6"></div>
     <div class="table-responsive">
         <table class="table table-striped table-condensed">
             @if($objects[0]->type == 'houses')
@@ -294,6 +294,10 @@
                 </tr>
             @endif
         </table>
+    </div>
+    </div>
+    <div class="col-md-6">
+        <div id="map" style="height: 300px"></div>
     </div>
     <h3>Описание</h3>
     <div>{!! $objects[0]->body !!}</div>
