@@ -107,41 +107,81 @@ class ObjectsController extends Controller
 
     public function filter(Request $request)
     {
+
         $input_sort = Input::get('sort');
         $type = $request->query->get('type');
         $currency = \Illuminate\Support\Facades\Session::get('currency');
         $rate = $this->rate->all();
         $cross_curs = round($rate[0]->EUR / $rate[0]->USD, 2);
         if ($currency == 1) {
-            $min_price_rub = (int)$request->query->get('pd');
-            $min_price_usd = $request->query->get('pd') / $rate[0]->USD;
-            $min_price_eur = $request->query->get('pd') / $rate[0]->EUR;
-            $max_price_rub = (int)$request->query->get('pu');
-            $max_price_usd = $request->query->get('pu') / $rate[0]->USD;
-            $max_price_eur = $request->query->get('pu') / $rate[0]->EUR;
+             $min_price_rub = (int)$request->query->get('pd');
+             $min_price_usd = $request->query->get('pd') / $rate[0]->USD;
+             $min_price_eur = $request->query->get('pd') / $rate[0]->EUR;
+             $max_price_rub = (int)$request->query->get('pu');
+             $max_price_usd = $request->query->get('pu') / $rate[0]->USD;
+             $max_price_eur = $request->query->get('pu') / $rate[0]->EUR;
         } elseif ($currency == 2) {
-            $min_price_rub = $request->query->get('pd') * $rate[0]->USD;
-            $min_price_usd = (int)$request->query->get('pd');
-            $min_price_eur = $request->query->get('pd') / $cross_curs;
-            $max_price_rub = $request->query->get('pu') * $rate[0]->USD;
-            $max_price_usd = (int)$request->query->get('pu');
-            $max_price_eur = $request->query->get('pu') / $cross_curs;
+              $min_price_rub = $request->query->get('pd') * $rate[0]->USD;
+              $min_price_usd = (int)$request->query->get('pd');
+             $min_price_eur = $request->query->get('pd') / $cross_curs;
+             $max_price_rub = $request->query->get('pu') * $rate[0]->USD;
+             $max_price_usd = (int)$request->query->get('pu');
+             $max_price_eur = $request->query->get('pu') / $cross_curs;
         } elseif ($currency == 3) {
-            $min_price_rub = $request->query->get('pd') * $rate[0]->EUR;
-            $min_price_usd = $request->query->get('pd') * $cross_curs;
-            $min_price_eur = (int)$request->query->get('pd');
-            $max_price_rub = $request->query->get('pu') * $rate[0]->EUR;
-            $max_price_usd = $request->query->get('pu') * $cross_curs;
-            $max_price_eur = (int)$request->query->get('pu');
+             $min_price_rub = $request->query->get('pd') * $rate[0]->EUR;
+             $min_price_usd = $request->query->get('pd') * $cross_curs;
+             $min_price_eur = (int)$request->query->get('pd');
+             $max_price_rub = $request->query->get('pu') * $rate[0]->EUR;
+             $max_price_usd = $request->query->get('pu') * $cross_curs;
+             $max_price_eur = (int)$request->query->get('pu');
         }
-
-//        $objects_all = Object::with('gallery')
-////            ->where('type', $type)
-//            ->where(DB::raw('(\'currency\' = 1 and \'price\' >= '.$min_price_rub.' and \'price\' <= '.$max_price_rub.') or (\'currency\' = 2 and \'price\' >= '.$min_price_usd.' and \'price\' <='.$max_price_usd.') or (\'currency\' = 3 and \'price\' >='.$min_price_eur.' and \'price\' <='.$max_price_eur.')'))
-////            ->published()
+        $currency_array = [1,2,3];
+        $sql = \DB::table('objects');
+        foreach ($currency_array as $select) {
+            if($select==1){
+                $max_price = $max_price_rub;
+                $min_price = $min_price_rub;
+            }
+            elseif ($select==2){
+                $max_price = $max_price_usd;
+                $min_price = $min_price_usd;
+            }
+            elseif ($select==3){
+                $max_price = $max_price_eur;
+                $min_price = $min_price_eur;
+            }
+            $sql->orWhere('currency', '=', $select)->where('price', '<=', $max_price)->where('price', '>=', $min_price)->where('type', '=', $type);
+        }
+        $objects_all = $sql->paginate(1);
+//        $objects_all = Object::where(function ($query) {
+//
+//                foreach($currency_array as $select) {
+//                    if($select==1){
+//                        $max_price = $max_price_rub;
+//                        $min_price = $min_price_rub;
+//                    }
+//                    elseif ($select==2){
+//                        $max_price = $max_price_usd;
+//                        $min_price = $min_price_usd;
+//                    }
+//                    elseif ($select==3){
+//                        $max_price = $max_price_eur;
+//                        $min_price = $min_price_eur;
+//                    }
+//                    $query->orWhere('currency', '=', $select)->where();
+//                }
+//                dd($query);
+//            })
 //            ->get();
-//        $objects = $objects_all;
-//        return view('objects.filter', compact('objects', 'links'), ['type' => $type, 'sort'=>$input_sort]);
+
+        $objects = $objects_all;
+        $links = $objects->appends(
+            ['sort' => $input_sort,
+                'pd'=>$request->query->get('pd'),
+                'pu'=>$request->query->get('pu'),
+                'type'=>$type])->links();
+        $objects = $this->currencyExchange($objects);
+        return view('objects.filter', compact('objects', 'links'), ['type' => $type, 'sort'=>$input_sort]);
         $objects_rub = Object::with('gallery')
             ->where('currency', 1)
             ->where('type', $type)

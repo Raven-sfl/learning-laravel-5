@@ -11,6 +11,7 @@
     <link href="/public/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="/public/css/fancybox/jquery.fancybox.css" rel="stylesheet">
     <link href="/public/css/flexslider.css" rel="stylesheet"/>
+    <link href="/public/css/bootstrap-slider.min.css" rel="stylesheet"/>
     <link href="/public/js/owl-carousel/owl.carousel.css" rel="stylesheet">
     <link href="/public/css/style.css" rel="stylesheet"/>
     <link href='/public/fonts/flexslider-icon.ttf' rel='stylesheet' type='text/css'>
@@ -97,6 +98,7 @@
                         <li><a href="/articles">Статьи</a></li>
                         <li><a href="#">О нас</a></li>
                         <li><a href="#">Контакты</a></li>
+                        <li><a href="#"><i class="fa fa-heart-o" style="font-weight: 300%" aria-hidden="true"> </i> 120</a></li>
                     </ul>
                 </div>
             </div>
@@ -112,17 +114,23 @@
                         <div id="filter" class="container content"
                              style="display: none; color: #333; padding-bottom: 15px">
                             {!! Form::open(['action'=>['frontend\ObjectsController@filter'],'method' => 'get']) !!}
-                            <div class="input-group">
-                                {{ Form::select('type', [
+                            <div class="col-md-3 col-sm-3">
+                                <div class="single-query form-group">
+                                    <label>Тип недвижимости</label>
+                                    {{ Form::select('type', [
                                    'flats' => 'Квартиры',
                                    'houses' => 'Дома',
                                    'areas' => 'Участки',
                                    'new-buildings' => 'Новостройки',
                                    'commercial' => 'Коммерческие'], null, ['class' => 'form-control'])
                                 }}
-                                {!! Form::text('pd', null , ['class'=> '','placeholder'=>'Мин. цена', 'style'=>'height:46px']) !!}
-                                {!! Form::text('pu', null , ['class'=> '','placeholder'=>'Макс. цена', 'style'=>'height:46px']) !!}
+                                </div>
+                            </div>
+                            <div class="input-group">
 
+                                {!! Form::text('pd', null , ['class'=> '','placeholder'=>'Мин. цена', 'style'=>'height:46px','id'=>'ex6SliderVal']) !!}
+                                {!! Form::text('pu', null , ['class'=> '','placeholder'=>'Макс. цена', 'style'=>'height:46px']) !!}
+                                <input id="ex6" type="text" data-slider-min="-5" data-slider-max="20" data-slider-step="1" data-slider-value="3"/>
                                 <button class="btn btn-small" type="submit">Фильтровать</button>
                             </div>
                             {!! Form::close() !!}
@@ -262,9 +270,14 @@
 <script src="/public/js/animate.js"></script>
 <script src="/public/js/custom.js"></script>
 <script src="/public/js/owl-carousel/owl.carousel.js"></script>
+<script src="/public/js/bootstrap-slider.min.js"></script>
 
 
 <script>
+    $("#ex6").slider();
+    $("#ex6").on("slide", function(slideEvt) {
+        $("#ex6SliderVal").text(slideEvt.value);
+    });
     function setCurrency(value) {
         currency_id = value;
         $.ajaxSetup({

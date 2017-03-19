@@ -296,7 +296,7 @@
         <div id="map" style="height: 300px"></div>
     </div>
 
-    <div class="col-md-12">
+    <div class="col-md-12" align="justify">
         <h3>Описание</h3>
         {!! $objects[0]->body !!}
     </div>

@@ -72,14 +72,14 @@
                     @elseif($object->currency == 3)
                         <i class="fa fa-eur" aria-hidden="true"></i>
                     @endif</p>
-                <p>Дата: {{date_format($object->created_at, 'd.m.Y')}}</p>
+                <p>Дата: {{$object->created_at}}</p>
                 <a href="/objects/{{$object->type}}/{{$object->base_id}}">Подробнее</a>
                 <hr>
             </div>
         </div>
 
     @endforeach
-
+    <div class="col-md-12">{{$links}}</div>
 
 
     @include('errors.list')
